@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { ListRenderer, ListRendererDependency, NoteListColumns } from '@joplin/lib/services/plugins/api/noteListType';
 import Note from '@joplin/lib/models/Note';
 import { FolderEntity, NoteEntity, TagEntity } from '@joplin/lib/services/database/types';
@@ -25,7 +25,7 @@ const hashContent = (content: any) => {
 
 export default (note: NoteEntity, isSelected: boolean, isWatched: boolean, listRenderer: ListRenderer, highlightedWords: string[], itemIndex: number, columns: NoteListColumns) => {
 	const [renderedNote, setRenderedNote] = useState<RenderedNote>(null);
-
+	const renderedNoteRef = useRef<RenderedNote>(null);
 	let dependencies = columns && columns.length ? columns.map(c => c.name) as ListRendererDependency[] : [];
 	if (listRenderer.dependencies) dependencies = dependencies.concat(listRenderer.dependencies);
 	dependencies = unique(dependencies);
@@ -58,7 +58,7 @@ export default (note: NoteEntity, isSelected: boolean, isWatched: boolean, listR
 				folder ? folder.title : '',
 			]);
 
-			if (renderedNote && renderedNote.hash === viewHash) return null;
+			if (renderedNoteRef.current && renderedNoteRef.current.hash === viewHash) return null;
 
 			const noteTitleHtml = getNoteTitleHtml(highlightedWords, Note.displayTitle(note));
 
@@ -84,20 +84,22 @@ export default (note: NoteEntity, isSelected: boolean, isWatched: boolean, listR
 
 			if (event.cancelled) return null;
 
-			setRenderedNote({
-				id: note.id,
-				hash: viewHash,
-				html: renderTemplate(
-					columns,
-					listRenderer.itemTemplate,
-					listRenderer.itemValueTemplates,
-					view,
-				),
-			});
+			const newRenderedNote = {
+			id: note.id,
+			hash: viewHash,
+			html: renderTemplate(
+				columns,
+				listRenderer.itemTemplate,
+				listRenderer.itemValueTemplates,
+				view,
+			),
+		};
+		renderedNoteRef.current = newRenderedNote;
+		setRenderedNote(newRenderedNote);
 		};
 
 		void renderNote();
-	}, [note, isSelected, isWatched, listRenderer, renderedNote, columns]);
+	}, [note, isSelected, isWatched, listRenderer, columns]);
 
 	return renderedNote;
 };

@@ -5,6 +5,8 @@ import { useCallback, useState, useRef, useMemo } from 'react';
 const useScroll = (itemsPerLine: number, noteCount: number, itemSize: Size, listSize: Size, listRef: React.MutableRefObject<HTMLDivElement>) => {
 	const [scrollTop, setScrollTop] = useState(0);
 	const lastScrollSetTime = useRef(0);
+	const noteCountRef = useRef(noteCount);
+	noteCountRef.current = noteCount;
 
 	const maxScrollTop = useMemo(() => {
 		return Math.max(0, itemSize.height * noteCount - listSize.height);
@@ -64,7 +66,7 @@ const useScroll = (itemsPerLine: number, noteCount: number, itemSize: Size, list
 		const topFloat = lineTopFloat * itemsPerLine;
 		const lineBottomFloat = (scrollTop + listSize.height - itemSize.height) / itemSize.height;
 		const bottomFloat = lineBottomFloat * itemsPerLine;
-		const top = Math.min(noteCount - 1, Math.floor(topFloat) + 1);
+		const top = Math.min(noteCountRef.current - 1, Math.floor(topFloat) + 1);
 		const bottom = Math.max(0, Math.floor(bottomFloat));
 
 		if (itemIndex >= top && itemIndex <= bottom) return;
@@ -85,7 +87,7 @@ const useScroll = (itemsPerLine: number, noteCount: number, itemSize: Size, list
 		listRef.current.scrollTop = newScrollTop;
 		lastScrollSetTime.current = Date.now();
 		// setScrollTopLikeYouMeanIt(newScrollTop);
-	}, [itemsPerLine, noteCount, itemSize.height, scrollTop, listSize.height, maxScrollTop, listRef]); // , setScrollTopLikeYouMeanIt]);
+	}, [itemsPerLine, itemSize.height, scrollTop, listSize.height, maxScrollTop, listRef]); // , setScrollTopLikeYouMeanIt]);
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	const onScroll = useCallback((event: any) => {
