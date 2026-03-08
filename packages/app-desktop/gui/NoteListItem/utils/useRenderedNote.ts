@@ -85,17 +85,17 @@ export default (note: NoteEntity, isSelected: boolean, isWatched: boolean, listR
 			if (event.cancelled) return null;
 
 			const newRenderedNote = {
-			id: note.id,
-			hash: viewHash,
-			html: renderTemplate(
-				columns,
-				listRenderer.itemTemplate,
-				listRenderer.itemValueTemplates,
-				view,
-			),
-		};
-		renderedNoteRef.current = newRenderedNote;
-		setRenderedNote(newRenderedNote);
+				id: note.id,
+				hash: viewHash,
+				html: renderTemplate(
+					columns,
+					listRenderer.itemTemplate,
+					listRenderer.itemValueTemplates,
+					view,
+				),
+			};
+			renderedNoteRef.current = newRenderedNote;
+			setRenderedNote(newRenderedNote);
 		};
 
 		void renderNote();
