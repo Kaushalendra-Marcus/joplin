@@ -58,7 +58,7 @@ export default (note: NoteEntity, isSelected: boolean, isWatched: boolean, listR
 				folder ? folder.title : '',
 			]);
 
-			if (renderedNoteRef.current && renderedNoteRef.current.hash === viewHash) return null;
+			if (renderedNoteRef.current && renderedNoteRef.current.hash === viewHash && renderedNoteRef.current.id === note.id) return null;
 
 			const noteTitleHtml = getNoteTitleHtml(highlightedWords, Note.displayTitle(note));
 
@@ -99,7 +99,7 @@ export default (note: NoteEntity, isSelected: boolean, isWatched: boolean, listR
 		};
 
 		void renderNote();
-	}, [note, isSelected, isWatched, listRenderer, columns]);
+	}, [note, isSelected, isWatched, listRenderer, highlightedWords, itemIndex, columns]);
 
 	return renderedNote;
 };
